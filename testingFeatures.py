@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
-from MDTPlotHandler import MDTPlotHandler
-from feature_extractor import FeatureExtractor
+from mouse_tracker.MDTPlotHandler import MDTPlotHandler
+from feature_extracting.feature_extractor import FeatureExtractor
 
 a = MDTPlotHandler().run()
 b = FeatureExtractor(a)

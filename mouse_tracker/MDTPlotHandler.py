@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from track_mouse import MouseDragTracker
+from mouse_tracker.track_mouse import MouseDragTracker
 
 class MDTPlotHandler:
     def run(self):
