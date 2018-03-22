@@ -36,7 +36,7 @@ def forward(fmc,pX):
     alfaHat[:,0] = alfaTemp[:,0]/c[0,0]
 
 
-    for t in range(1,T-1):
+    for t in range(1,T):
         alfaTemp[:,t] = np.multiply(pX[:,t],(alfaHat[:,t-1].transpose()*A).transpose())
         c[0,t] = np.sum(alfaTemp[:,t])
         alfaHat[:,t] = alfaTemp[:,t]/c[0,t]
@@ -45,7 +45,7 @@ def forward(fmc,pX):
 
     return alfaHat,c
 
-def test()
+def test():
     initProb = np.matrix('1;0;0')
     transProb = np.matrix('0.5,0.5,0,0;0,0.5,0.5,0;0,0,0.5,0.5')
     pX = np.matrix('1,0.8,0.7,0.6,0.5,0.0,0.0,0.0;0.0,0.2,0.3,0.4,0.5,0.9,0.7,0.2;0.0,0.0,0.0,0.0,0.0,0.1,0.3,0.8')
