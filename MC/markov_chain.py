@@ -4,7 +4,7 @@ class FiniteMarkovChain():
         self.initProb = initProb
         self.transProb = transProb
     def nStates(self):
-        return np.size(self.transProb,1)
+        return np.size(self.transProb,0)
     def setInitProb(self,initProb):
         self.initProb = initProb
     def setTransProb(self,transProb):
@@ -25,23 +25,22 @@ def forward(fmc,pX):
     A = fmc.getTransProb()
     q = fmc.getInitProb()
     alfaTemp = np.asmatrix(np.zeros(np.shape(pX)))
+    pX = np.matrix(pX)
     alfaTemp[:,0] = np.multiply(q,pX[:,0])
-
     c = np.zeros((1,T+1))
     AExit = A[:,-1]
     A = A[:,0:-1]
-
     c[0,0] = np.sum(alfaTemp[:,0],0)
     alfaHat = np.asmatrix(np.zeros(np.shape(pX)))
     alfaHat[:,0] = alfaTemp[:,0]/c[0,0]
 
+    if T > 1:
+        for t in range(1,T):
+            alfaTemp[:,t] = np.multiply(pX[:,t],(alfaHat[:,t-1].transpose()*A).transpose())
+            c[0,t] = np.sum(alfaTemp[:,t])
+            alfaHat[:,t] = alfaTemp[:,t]/c[0,t]
 
-    for t in range(1,T):
-        alfaTemp[:,t] = np.multiply(pX[:,t],(alfaHat[:,t-1].transpose()*A).transpose())
-        c[0,t] = np.sum(alfaTemp[:,t])
-        alfaHat[:,t] = alfaTemp[:,t]/c[0,t]
-
-    c[0,T] = alfaHat[:,T-1].transpose()*AExit
+        c[0,T] = alfaHat[:,T-1].transpose()*AExit
 
     return alfaHat,c
 
@@ -51,5 +50,3 @@ def test():
     pX = np.matrix('1,0.8,0.7,0.6,0.5,0.0,0.0,0.0;0.0,0.2,0.3,0.4,0.5,0.9,0.7,0.2;0.0,0.0,0.0,0.0,0.0,0.1,0.3,0.8')
     fmc = FiniteMarkovChain(initProb,transProb)
     alfahat,c = forward(fmc,pX)
-    print(alfahat)
-    print(c)

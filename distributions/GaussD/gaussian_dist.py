@@ -23,10 +23,15 @@ class GaussianDist:
     def generate(self):
         random.normal(self.mean,self.stDev,self.dataSize)
     def prob(self,x):
-        return (1/(np.sqrt(2*np.pi*self.stDev**2)))*np.exp(-(x-self.mean)**2/(2*self.stDev**2))
-
+        x = np.asmatrix(x)
+        return (1/(np.sqrt(2*np.pi*np.square(self.stDev))))*np.exp(-np.square(x-self.mean)/(2*np.square(self.stDev)))
+    # TODO: Put in LogScale in above!!!!!
 def logProb(pD,x):
-    nObj = len(pD)
+    nObj = 1
+    if isinstance(pD,list):
+        nObj = len(pD)
+    else:
+        pD = [pD]
     nX = 1
     if not isinstance(x,int):
         nX = len(x)
