@@ -1,6 +1,6 @@
 import numpy as np
 from distributions.GaussD.gaussian_dist import GaussianDist,logProb
-from MC.markov_chain import forward, FiniteMarkovChain
+from MC.markov_chain import forward, FiniteMarkovChain, backward
 class HiddenMarkovChain:
     def __init__(self,mc,emissionDist):
         self.mc = mc
@@ -18,6 +18,8 @@ class HiddenMarkovChain:
         pX,_ = logScale(pX)
         _,c = forward(self.mc,pX)
         print(c)
+        betaHat = backward(self.mc,pX,c)
+        print(betaHat)
         logP = sum(np.log(c))
         return logP
 
@@ -31,7 +33,7 @@ def logScale(probMat):
 initProb = np.matrix('1;0')
 transProb = np.matrix('0.9,0.1,0;0,0.9,0.1')
 x = np.matrix('1,0.8,0.7,0.6,0.5,0.0,0.0,0.0,0.0,0.2,0.3,0.4,0.5,0.9,0.7,0.2,0.0,0.0,0.0,0.0,0.0,0.1,0.3,0.8')
-fmc = FiniteMarkovChain(initProb,transProb)
+fmc = FiniteMarkovChain(initProb, transProb)
 gD1 = GaussianDist(0,1)
 gD2 = GaussianDist(3,2)
 hmm = HiddenMarkovChain(fmc,[gD1,gD2])
