@@ -1,1 +1,6 @@
-.idea/
+.idea/workspace.xml
+distributions/__pycache__/__init__.cpython-36.pyc
+distributions/GaussD/__pycache__/__init__.cpython-36.pyc
+distributions/GaussD/__pycache__/gaussian_dist.cpython-36.pyc
+distributions/GaussD/__pycache__/gaussian_dist.cpython-36.pyc
+distributions/GaussD/__pycache__/gaussian_dist.cpython-36.pyc
