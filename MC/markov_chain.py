@@ -1,6 +1,6 @@
 import numpy as np
 class FiniteMarkovChain():
-    def __init__(self,initProb,transProb):
+    def __init__(self,initProb = None,transProb = None):
         self.initProb = initProb
         self.transProb = transProb
         self.isFinite = True
