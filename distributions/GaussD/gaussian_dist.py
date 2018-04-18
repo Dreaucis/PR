@@ -24,7 +24,7 @@ class GaussianDist:
         random.normal(self.mean,self.stDev,self.dataSize)
     def prob(self,x):
         x = np.asmatrix(x)
-        return (1/(np.sqrt(2*np.pi*np.square(self.stDev))))*np.exp(-np.square(x-self.mean)/(2*np.square(self.stDev)))
+        return np.transpose((1/(np.sqrt(2*np.pi*np.square(self.stDev)))))*np.exp(-np.square(x-self.mean)/(2*np.square(self.stDev)))
     # TODO: Put in LogScale in above!!!!!
 def logProb(pD,x):
     nObj = 1

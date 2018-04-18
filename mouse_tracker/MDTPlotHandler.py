@@ -6,7 +6,7 @@ class MDTPlotHandler:
     def run(self):
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        rect, = ax.plot([], [],'*')
+        rect, = ax.plot([], [],'-')
         mdt = MouseDragTracker(rect)
         mdt.connect()
         plt.show()

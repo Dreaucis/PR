@@ -91,8 +91,8 @@ def initLeftRightHMM(hmm,obsData,lData): #TODO: COMPARE WITH MATLAB FROM HERE. E
     hmm.setEmissionDist(pD)
 
 def initDist(dist,xT):
-    dist.setMean(xT[0].mean(1))
-    dist.setStDev(xT[0].std(1))
+    dist.setMean(xT.mean(1))
+    dist.setStDev(xT.std(1))
     return dist
 
 
@@ -193,7 +193,7 @@ class AState:
                     print('WARNING: ZERO DIV IN ADAPT SET DIST')
                     covEstim = np.diag(np.repeat(np.inf,np.shape(pD[i].mean)))
 
-                pD[i].stDev = np.sqrt(np.diag(covEstim))
+                pD[i].stDev = np.asmatrix(np.sqrt(np.diag(covEstim))).transpose()
 
         
 

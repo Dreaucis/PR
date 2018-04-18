@@ -47,7 +47,7 @@ class MouseDragTracker:
         self.line.figure.canvas.mpl_disconnect(self.cidmotion)
 
     def get_crds(self):
-        return (self.xs,self.ys)
+        return self.xs,self.ys
 
 
 
