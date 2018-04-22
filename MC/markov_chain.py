@@ -29,7 +29,7 @@ def forward(fmc,pX):
     alfaTemp = np.asmatrix(np.zeros(np.shape(pX)))
     pX = np.matrix(pX)
     alfaTemp[:,0] = np.multiply(q,pX[:,0])
-    c = np.zeros((1,T+1))
+    c = np.asmatrix(np.zeros((1,T+1)))
     AExit = np.asmatrix(A[:,-1])
     A = A[:,0:-1]
     c[0,0] = np.sum(alfaTemp[:,0],0)

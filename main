@@ -1,0 +1,78 @@
+import numpy as np
+from HMM.hidden_markov_chain import MakeLeftRightHMM
+from feature_extracting.feature_extractor import FeatureExtractor
+from mouse_tracker.MDTPlotHandler import MDTPlotHandler
+
+def printHMM(hmm):
+    print('Class {0}'.format(hmm))
+    print('Initial Probability')
+    print(hmm.mc.initProb)
+    print('Transition Matrix')
+    print(hmm.mc.transProb)
+    print('Type of emission distributions: {0}'.format(type(hmm.getEmissionDist())))
+    for i in range(0,len(hmm.getEmissionDist())):
+        print('Emission dist nr: {0}')
+        print('Mean: {1}  Standard deviation {2}'.format((i+1),hmm.getEmissionDist()[i].mean,hmm.getEmissionDist()[i].stDev))
+        print('Type of emission distributions: {0}'.format(type(hmm.getEmissionDist()[i])))
+
+def trainHMMs():
+    hmmList =[]
+    letters = ['A','B','C']
+    nStatesList = [6,6,6]
+    for i in range(0,len(letters)):
+        letter = letters[i]
+        nStates = nStatesList[i]
+        print('Loading data for letter {0} from CSV'.format(letter))
+
+        path2Cords = 'Data/Letter{0}/CordsLetter{0}.csv'.format(letter)
+        path2LData = 'Data/Letter{0}/LDataLetter{0}.csv'.format(letter)
+
+        cords = np.asmatrix(np.genfromtxt(path2Cords, delimiter=','))
+        lData = np.genfromtxt(path2LData, delimiter=',').astype(int).tolist()
+
+        #distanceToCenter = FeatureExtractor(cords,lData).dist2cent()
+        #angleOfMotion = FeatureExtractor(cords,lData).angleOfMotion() # TODO: WOOPS , NORMALIZE SEPEARTELY FOR EACH DATA SET (IN LDATA)
+        #diffAngleOfMotion = np.concatenate([np.matrix(0), np.diff(angleOfMotion)], 1)
+        #normCords = FeatureExtractor(cords,lData).normCords
+        #featureData = np.concatenate([distanceToCenter,angleOfMotion],0)
+        #featureData = np.concatenate([diffAngleOfMotion,angleOfMotion],0)
+        #featureData = np.concatenate([normCords,angleOfMotion],0)
+        #featureData = angleOfMotion
+        #featureData = distanceToCenter
+
+        featureData = getFeatures(cords,lData)
+
+        print(np.shape(featureData))
+        hmmList.append(MakeLeftRightHMM(nStates,featureData,lData))
+    return hmmList
+
+def getFeatures(cords,lData = []):
+    if not lData:
+        lData.append(np.size(cords, 1))
+    featureExtractor = FeatureExtractor(cords, lData)
+    distanceToCenter = featureExtractor.dist2cent()
+    angleOfMotion = featureExtractor.angleOfMotion()
+
+    #features = np.concatenate([distanceToCenter,angleOfMotion],0)
+    features = angleOfMotion
+    return features
+
+
+def main():
+    print('Initializing...')
+    hmmList = trainHMMs()
+    for j in range(0,25):
+        print('Tracking mouse...')
+        mouseCords = MDTPlotHandler().run()
+        print('Extracting features...')
+        #distanceToCenter = FeatureExtractor(mouseCords).dist2cent()
+        features = getFeatures(mouseCords)
+
+        letters = ['A','B','C']
+        logProbList = []
+        for i in range(0,len(hmmList)):
+            logProbList.append(hmmList[i].logProb(features))
+        letters[np.argmax(logProbList)]
+        print(letters[np.argmax(logProbList)])
+
+main()

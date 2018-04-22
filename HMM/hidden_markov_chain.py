@@ -16,7 +16,7 @@ class HiddenMarkovChain:
     def getEmissionDist(self):
         return self.emissionDist
     def logProb(self,x):
-        pX = np.zeros((self.nStates,len(x)))
+        pX = np.zeros((self.nStates,np.shape(x)[1]))
         for i in range(0,self.nStates):
             pX[i,:] = self.emissionDist[i].prob(x)
 
@@ -25,10 +25,10 @@ class HiddenMarkovChain:
 
         betaHat = backward(self.mc,pX,c)
 
-        logP = sum(np.log(c))
+        logP = np.sum(np.log(c))
         return logP
 
-def MakeLeftRightHMM(nStates,pD,obsData,lData = None):
+def MakeLeftRightHMM(nStates,obsData,lData = []):
     """
     :param nStates:
     :param pD:
@@ -36,8 +36,11 @@ def MakeLeftRightHMM(nStates,pD,obsData,lData = None):
     :param lData: vector with lengths of training sub-sequences.
     :return:
     """
-    if lData == None:
+    if len(lData) == 0:
         lData = [np.size(obsData,1)]
+    pD = []
+    for i in range(0, nStates):
+        pD.append(GaussianDist())
     D = np.mean(lData)
     D = D/nStates
     mc = FiniteMarkovChain(); initLeftRight(mc,nStates,D)
@@ -48,7 +51,8 @@ def MakeLeftRightHMM(nStates,pD,obsData,lData = None):
     return hmm
 
 def HMMTrain(hmm,xT,lxT,nIterations=5,minStep=np.log(1.01)):
-    ixt = np.cumsum([1]+lxT)-1
+    ixt = [0]+ (np.cumsum(lxT)-1).tolist()
+
     logprobs = np.asmatrix(np.zeros((1,nIterations)))
     logPold = 99999999999
     # TODO: continue from here
@@ -60,11 +64,12 @@ def HMMTrain(hmm,xT,lxT,nIterations=5,minStep=np.log(1.01)):
         logPdelta = logprobs[0,nTraining] - logPold
         logPold = logprobs[0,nTraining]
         aState.adaptSetHMM(hmm)
-    if nTraining == None:
+    if not nTraining:
         nTraining = 0
     while logPdelta > minStep:
         nTraining = nTraining+1
-        logprobs[0,nTraining] = 0
+        logprobs = np.concatenate([logprobs,np.asmatrix(0)],1)
+        #logprobs[0,nTraining] = 0 TODO: REMEMBER HERE.
         aState = AState(hmm)
         for r in range(0, len(lxT)):
             logP = aState.accumulateHMM(hmm, xT[:, ixt[r]:(ixt[r + 1])])
@@ -239,4 +244,4 @@ def testMakeLeftRightHMM():
     print(hmm.getEmissionDist()[0].stDev)
     print(hmm.getEmissionDist()[1].mean)
     print(hmm.getEmissionDist()[1].stDev)
-testMakeLeftRightHMM()
+

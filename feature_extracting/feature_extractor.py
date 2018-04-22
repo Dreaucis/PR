@@ -2,18 +2,47 @@ import numpy as np
 from numpy import linalg as LA
 
 class FeatureExtractor:
-    def __init__(self,cords):
-        self.cords = self.interpolateCords(cords, 100)
-        self.normCords = self.normalizer()
+    def __init__(self,cords,lData = []):
+        if not lData:
+            lData.append(np.size(cords,1))
+        self.lData = lData
+        self.cords = cords #self.interpolateCords(cords, 100) TODO: Update inter points
+        self.normCords = self.normalizeFull()
 
-    def normalizer(self):
-        maxCords = self.cords.max(1)
-        minCords = self.cords.min(1)
+
+    def normalize(self):
+        splittingPoints = [0] + (np.cumsum(self.lData) - 1).tolist()
+        normCords = np.asmatrix(np.zeros(np.shape(self.cords)))
+        for i in range(0,len(self.lData)):
+            normCords[:,splittingPoints[i]:splittingPoints[i+1]] = self.normalizer(self.cords[:,splittingPoints[i]:splittingPoints[i+1]])
+        return normCords
+
+    def normalizeFull(self):
+        splittingPoints = [0] + (np.cumsum(self.lData) - 1).tolist()
+        normCords = np.asmatrix(np.zeros(np.shape(self.cords)))
+        for i in range(0,len(self.lData)):
+            normCords[:,splittingPoints[i]:splittingPoints[i+1]] = self.normalizerFull(self.cords[:,splittingPoints[i]:splittingPoints[i+1]])
+        return normCords
+
+
+    def normalizer(self,cords): # TODO: could try full normalization
+        maxCords = cords.max(1)
+        minCords = cords.min(1)
         diffCords = maxCords - minCords
-        centCords = self.cords - (maxCords+minCords)/2
-
+        centCords = cords - (maxCords+minCords)/2
         if LA.norm(diffCords) != 0:
             normalizedCords = centCords/(max(maxCords-minCords))
+            return normalizedCords
+        else:
+            print('Singular point')
+            return centCords
+
+    def normalizerFull(self,cords):
+        maxCords = np.max(cords,1)
+        minCords = np.min(cords,1)
+        centCords = cords - (maxCords + minCords) / 2
+        if LA.norm(maxCords - minCords) != 0:
+            normalizedCords = np.divide(centCords,(maxCords - minCords))
             return normalizedCords
         else:
             print('Singular point')
@@ -30,6 +59,9 @@ class FeatureExtractor:
         return interCords
 
     def dist2cent(self):
-        euclDist = LA.norm(self.normCords,2,0)
+        euclDist = np.asmatrix(LA.norm(self.normCords,2,0))
         return euclDist
 
+    def angleOfMotion(self):
+        angleOfMotion = np.arctan2(self.normCords[0,:],self.normCords[1,:])
+        return angleOfMotion

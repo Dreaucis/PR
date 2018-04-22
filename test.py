@@ -1,16 +1,5 @@
-import matplotlib.pyplot as plt
-class LineDrawer(object):
-    lines = []
-    def draw_line(self):
-        ax = plt.gca()
-        xy = plt.ginput(2)
+import numpy as np
 
-        x = [p[0] for p in xy]
-        y = [p[1] for p in xy]
-        line = plt.plot(x,y)
-        ax.figure.canvas.draw()
-
-        self.lines.append(line)
-plt.plot([1,2,3,4,5])
-ld = LineDrawer()
-ld.draw_line() # here you click on the plot
+my_data = np.genfromtxt('Data/LetterA/CordsLetterA.csv', delimiter=',')
+my_data2 = np.genfromtxt('Data/LetterA/lDataLetterA.csv', delimiter=',')
+print(my_data2.astype(int))
