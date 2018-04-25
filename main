@@ -2,6 +2,8 @@ import numpy as np
 from HMM.hidden_markov_chain import MakeLeftRightHMM
 from feature_extracting.feature_extractor import FeatureExtractor
 from mouse_tracker.MDTPlotHandler import MDTPlotHandler
+from distributions.GaussD.gaussian_dist import GaussianDist
+from distributions.WrappedGaussD.wrapped_gaussian_dist import WrappedGaussianDist
 
 def printHMM(hmm):
     print('Class {0}'.format(hmm))
@@ -42,8 +44,13 @@ def trainHMMs():
 
         featureData = getFeatures(cords,lData)
 
+        pD = []
+        for j in range(0, nStates):
+           pD.append(WrappedGaussianDist()) #TODO: IF Wrapped Gaussian, need to even out points!
+
         print(np.shape(featureData))
-        hmmList.append(MakeLeftRightHMM(nStates,featureData,lData))
+        hmmList.append(MakeLeftRightHMM(nStates,pD,featureData,lData))
+        printHMM(hmmList[i])
     return hmmList
 
 def getFeatures(cords,lData = []):
@@ -52,8 +59,9 @@ def getFeatures(cords,lData = []):
     featureExtractor = FeatureExtractor(cords, lData)
     distanceToCenter = featureExtractor.dist2cent()
     angleOfMotion = featureExtractor.angleOfMotion()
-
+    normCords = featureExtractor.normCords
     #features = np.concatenate([distanceToCenter,angleOfMotion],0)
+    #features = np.concatenate([normCords,angleOfMotion],0)
     features = angleOfMotion
     return features
 

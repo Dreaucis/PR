@@ -63,5 +63,9 @@ class FeatureExtractor:
         return euclDist
 
     def angleOfMotion(self):
-        angleOfMotion = np.arctan2(self.normCords[0,:],self.normCords[1,:])
+        #angleOfMotion = np.arctan2(self.normCords[0,:],self.normCords[1,:])
+        diffCords = np.diff(self.cords)
+        diffCordsExtended = np.concatenate((diffCords[:,0],diffCords),1)
+
+        angleOfMotion = np.arctan2(diffCordsExtended[0, :], diffCordsExtended[1, :])
         return angleOfMotion

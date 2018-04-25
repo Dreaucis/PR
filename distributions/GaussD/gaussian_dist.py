@@ -1,6 +1,6 @@
-from numpy.random import multivariate_normal
 import numpy as np
 from numpy import random
+from numpy import linalg as LA
 
 
 class GaussianDist:
@@ -22,9 +22,23 @@ class GaussianDist:
         self.dataSize = dataSize
     def generate(self):
         random.normal(self.mean,self.stDev,self.dataSize)
-    def prob(self,x):
+    def prob(self,x): #TODO: THIS DOES NOT GIVE MULTIVARIATE ESTIMATES CORRECTLY!!!
         x = np.asmatrix(x)
-        return np.transpose((1/(np.sqrt(2*np.pi*np.square(self.stDev)))))*np.exp(-np.square(x-self.mean)/(2*np.square(self.stDev)))
+        pdf = 1# np.transpose((1/(np.sqrt(2*np.pi*np.square(self.stDev)))))*np.exp(-np.square(x-self.mean)/(2*np.square(self.stDev)))
+        covMatrix = np.asmatrix(np.diagflat(np.square(self.stDev)))
+        #print(np.asmatrix(covMatrix).shape[0])
+
+        dim = covMatrix.shape[0]
+        pdf_2 = np.exp(-(1/2)*(x-self.mean).T*covMatrix.I*(x-self.mean)) / np.sqrt((2*np.pi)**dim * LA.det(covMatrix))
+        #print((x-self.mean))
+        #print((x-self.mean).T)
+        #print('fdsfsdfs')
+        #print(covMatrix.I)
+        #print(-(1/2)*(x-self.mean).T*covMatrix.I*(x-self.mean))
+        #print(pdf)
+        #print(pdf_2)
+
+        return pdf
     # TODO: Put in LogScale in above!!!!!
 def logProb(pD,x):
     nObj = 1
@@ -48,4 +62,9 @@ def logProb(pD,x):
         else:
             print('ERROR')
     return logP
+
+def testGaussianDist():
+    a = GaussianDist(np.asmatrix('1;1'),np.asmatrix('1;1'))
+    a.prob(np.asmatrix('1,2,3;1,1,1'))
+testGaussianDist()
 #TODO: Fix so that it can take a vecotr of distributions as input!

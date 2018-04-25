@@ -1,6 +1,6 @@
 import numpy as np
 import numpy.matlib
-from distributions.GaussD.gaussian_dist import GaussianDist,logProb
+from distributions.GaussD.gaussian_dist import GaussianDist
 from MC.markov_chain import forward, FiniteMarkovChain, backward
 
 
@@ -28,7 +28,7 @@ class HiddenMarkovChain:
         logP = np.sum(np.log(c))
         return logP
 
-def MakeLeftRightHMM(nStates,obsData,lData = []):
+def MakeLeftRightHMM(nStates,pD,obsData,lData = []):
     """
     :param nStates:
     :param pD:
@@ -38,9 +38,9 @@ def MakeLeftRightHMM(nStates,obsData,lData = []):
     """
     if len(lData) == 0:
         lData = [np.size(obsData,1)]
-    pD = []
-    for i in range(0, nStates):
-        pD.append(GaussianDist())
+    #pD = []
+    #for i in range(0, nStates):
+    #    pD.append(GaussianDist())
     D = np.mean(lData)
     D = D/nStates
     mc = FiniteMarkovChain(); initLeftRight(mc,nStates,D)
